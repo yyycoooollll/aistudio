@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-serif: "Georgia", serif;
+  
+  --color-bg-deep: #020408;
+  --color-nebula-purple: rgba(74, 0, 224, 0.15);
+  --color-nebula-blue: rgba(0, 198, 255, 0.1);
+}
+
+@layer base {
+  body {
+    @apply bg-bg-deep text-white antialiased overflow-hidden;
+  }
+}
