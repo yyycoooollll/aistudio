@@ -1,9 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { MotionValue } from 'motion/react';
 
-export const Starfield: React.FC = () => {
+export const Starfield: React.FC<{ progress: MotionValue<number> }> = ({ progress }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
+  const pointsRef = useRef<THREE.Points | null>(null);
+  const materialRef = useRef<THREE.PointsMaterial | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -29,7 +32,6 @@ export const Starfield: React.FC = () => {
       positions[i3 + 1] = (Math.random() - 0.5) * 10;
       positions[i3 + 2] = (Math.random() - 0.5) * 10;
 
-      // Subtle color variations (white, blue-ish, yellow-ish)
       const r = 0.8 + Math.random() * 0.2;
       const g = 0.8 + Math.random() * 0.2;
       const b = 0.9 + Math.random() * 0.1;
@@ -49,8 +51,10 @@ export const Starfield: React.FC = () => {
       opacity: 0.8,
       sizeAttenuation: true,
     });
+    materialRef.current = material;
 
     const points = new THREE.Points(geometry, material);
+    pointsRef.current = points;
     scene.add(points);
 
     // Mouse move handler
@@ -85,6 +89,14 @@ export const Starfield: React.FC = () => {
       points.position.x += (targetX - points.position.x) * 0.05;
       points.position.y += (targetY - points.position.y) * 0.05;
 
+      // Update based on progress
+      const p = progress.get();
+      points.position.z = p * 8;
+      if (materialRef.current) {
+        materialRef.current.opacity = Math.max(0, 0.8 - p * 2);
+        materialRef.current.size = 0.005 + p * 0.05;
+      }
+
       renderer.render(scene, camera);
     };
 
@@ -100,7 +112,7 @@ export const Starfield: React.FC = () => {
       geometry.dispose();
       material.dispose();
     };
-  }, []);
+  }, [progress]);
 
   return <div ref={containerRef} className="fixed inset-0 bg-transparent z-0" id="starfield-container" />;
 };
